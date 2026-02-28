@@ -1,25 +1,22 @@
 import React from "react";
 
-export default function SidebarWidget() {
+const SidebarWidget: React.FC = () => {
   return (
-    <div
-      className={`
-        mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gray-50 px-4 py-5 text-center dark:bg-white/[0.03]`}
-    >
-      <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">
-        #1 Tailwind CSS Dashboard
+    <div className="mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gradient-to-b from-brand-50 to-brand-100 px-4 pb-5 pt-5 text-center dark:from-brand-500/10 dark:to-brand-500/5">
+      <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white/90">
+        ProCMS
       </h3>
-      <p className="mb-4 text-gray-500 text-theme-sm dark:text-gray-400">
-        Leading Tailwind CSS Admin Template with 400+ UI Component and Pages.
+      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+        Client & Project Management
       </p>
       <a
-        href="https://tailadmin.com/pricing"
-        target="_blank"
-        rel="nofollow"
-        className="flex items-center justify-center p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm hover:bg-brand-600"
+        href="/"
+        className="flex items-center justify-center rounded-lg bg-brand-500 p-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600"
       >
-        Upgrade To Pro
+        Dashboard
       </a>
     </div>
   );
-}
+};
+
+export default SidebarWidget;
