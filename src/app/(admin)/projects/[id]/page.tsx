@@ -10,6 +10,9 @@ import {
     defaultColumns,
     Task,
     KanbanColumn,
+    taskComments as initialComments,
+    TaskComment,
+    TaskCommentReply,
 } from "@/data/mockData";
 import {
     PlusIcon,
@@ -18,6 +21,7 @@ import {
     PencilIcon,
 } from "@/icons/index";
 import { Modal } from "@/components/ui/modal";
+import TaskCommentModal from "@/components/TaskCommentModal";
 
 const priorityColors: Record<string, string> = {
     low: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
@@ -55,6 +59,37 @@ export default function ProjectDetailPage() {
     const [showTaskDetail, setShowTaskDetail] = useState<Task | null>(null);
     const [draggedTask, setDraggedTask] = useState<string | null>(null);
     const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+    const [comments, setComments] = useState<TaskComment[]>(initialComments);
+    const [commentTask, setCommentTask] = useState<Task | null>(null);
+
+    const getCommentCount = (taskId: string) => comments.filter((c) => c.taskId === taskId).length;
+    const getPendingCount = (taskId: string) => comments.filter((c) => c.taskId === taskId && c.status === "pending").length;
+
+    const handleAddComment = (comment: TaskComment) => setComments((prev) => [...prev, comment]);
+    const handleAddReply = (commentId: string, reply: TaskCommentReply) => {
+        setComments((prev) => prev.map((c) => c.id === commentId ? { ...c, replies: [...c.replies, reply] } : c));
+    };
+    const handleApprove = (commentId: string) => {
+        const comment = comments.find((c) => c.id === commentId);
+        if (!comment) return;
+        const newTask: Task = {
+            id: `task-generated-${Date.now()}`,
+            title: `[Client Request] ${comment.content.slice(0, 60)}...`,
+            description: comment.content,
+            status: "todo",
+            priority: "medium",
+            assigneeId: employees[0]?.id || "",
+            projectId: projectData!.id,
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            createdAt: new Date().toISOString().split("T")[0],
+            tags: ["client-request"],
+        };
+        setTasks((prev) => [...prev, newTask]);
+        setComments((prev) => prev.map((c) => c.id === commentId ? { ...c, status: "approved" } : c));
+    };
+    const handleReject = (commentId: string, reason: string) => {
+        setComments((prev) => prev.map((c) => c.id === commentId ? { ...c, status: "rejected", rejectionReason: reason } : c));
+    };
 
     const [newTask, setNewTask] = useState({
         title: "",
@@ -390,7 +425,13 @@ export default function ProjectDetailPage() {
                                                                 {task.priority}
                                                             </span>
                                                         </div>
-                                                        <div className="flex items-center gap-2">
+                                                        <div className="flex items-center gap-1.5">
+                                                            {getPendingCount(task.id) > 0 && (
+                                                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300 animate-pulse">⏳ {getPendingCount(task.id)}</span>
+                                                            )}
+                                                            {getCommentCount(task.id) > 0 && (
+                                                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">💬 {getCommentCount(task.id)}</span>
+                                                            )}
                                                             {task.dueDate && (
                                                                 <span className="text-[11px] text-gray-400 dark:text-gray-500">
                                                                     {new Date(task.dueDate).toLocaleDateString(
@@ -714,16 +755,47 @@ export default function ProjectDetailPage() {
                                 <TrashBinIcon className="h-4 w-4" />
                                 Delete Task
                             </button>
-                            <button
-                                onClick={() => setShowTaskDetail(null)}
-                                className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
-                            >
-                                Close
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => { setCommentTask(showTaskDetail); setShowTaskDetail(null); }}
+                                    className="inline-flex items-center gap-2 rounded-lg border border-blue-200 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 dark:border-blue-500/30 dark:text-blue-400 dark:hover:bg-blue-500/10 transition-colors"
+                                >
+                                    💬 Comments
+                                    {getCommentCount(showTaskDetail.id) > 0 && (
+                                        <span className="bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 text-xs px-1.5 py-0.5 rounded-full">{getCommentCount(showTaskDetail.id)}</span>
+                                    )}
+                                    {getPendingCount(showTaskDetail.id) > 0 && (
+                                        <span className="bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 text-xs px-1.5 py-0.5 rounded-full animate-pulse">{getPendingCount(showTaskDetail.id)} pending</span>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setShowTaskDetail(null)}
+                                    className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
             </Modal>
+
+            {/* Task Comment Modal */}
+            {commentTask && (
+                <TaskCommentModal
+                    task={commentTask}
+                    projectId={projectData.id}
+                    comments={comments}
+                    onClose={() => setCommentTask(null)}
+                    viewerType="admin"
+                    viewerId="admin-1"
+                    viewerName="Admin"
+                    onAddComment={handleAddComment}
+                    onAddReply={handleAddReply}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                />
+            )}
         </div>
     );
 }
