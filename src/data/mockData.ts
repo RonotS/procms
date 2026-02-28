@@ -644,3 +644,125 @@ export const projects: Project[] = [
         ],
     },
 ];
+
+export interface EODReport {
+    id: string;
+    employeeId: string;
+    projectId: string;
+    date: string;
+    content: string;
+    createdAt: string;
+}
+
+export const eodReports: EODReport[] = [
+    {
+        id: "report-1",
+        employeeId: "emp-1",
+        projectId: "proj-1",
+        date: "2025-02-27",
+        content: "<h3>Today's Progress</h3><p>Completed the <strong>product listing page</strong> redesign with new card layout and filtering system.</p><ul><li>Implemented responsive grid layout</li><li>Added search and filter functionality</li><li>Fixed cart icon badge count bug</li></ul><h3>Blockers</h3><p>Waiting on final product image assets from the design team.</p>",
+        createdAt: "2025-02-27T17:30:00Z",
+    },
+    {
+        id: "report-2",
+        employeeId: "emp-1",
+        projectId: "proj-3",
+        date: "2025-02-27",
+        content: "<h3>Trading Dashboard Updates</h3><p>Integrated <strong>real-time WebSocket</strong> data feeds for the main dashboard charts.</p><ul><li>Added candlestick chart component</li><li>Implemented price alert system</li></ul><p>Performance looks good — rendering at 60fps even with live updates.</p>",
+        createdAt: "2025-02-27T18:00:00Z",
+    },
+    {
+        id: "report-3",
+        employeeId: "emp-2",
+        projectId: "proj-2",
+        date: "2025-02-27",
+        content: "<h3>Brand Identity Progress</h3><p>Finalized the <strong>color palette</strong> and <strong>typography system</strong> for GreenLeaf Studios.</p><ul><li>Created 3 logo variations</li><li>Designed business card mockups</li><li>Started letterhead template</li></ul>",
+        createdAt: "2025-02-27T17:45:00Z",
+    },
+];
+
+// Task Comments System
+export interface TaskCommentReply {
+    id: string;
+    authorId: string;
+    authorType: "client" | "employee" | "admin";
+    authorName: string;
+    content: string;
+    createdAt: string;
+}
+
+export interface TaskComment {
+    id: string;
+    taskId: string;
+    projectId: string;
+    authorId: string;
+    authorType: "client" | "employee" | "admin";
+    authorName: string;
+    content: string;
+    images: string[];
+    createdAt: string;
+    status: "pending" | "approved" | "rejected";
+    rejectionReason?: string;
+    replies: TaskCommentReply[];
+}
+
+export const taskComments: TaskComment[] = [
+    {
+        id: "comment-1",
+        taskId: "task-1",
+        projectId: "proj-1",
+        authorId: "client-1",
+        authorType: "client",
+        authorName: "James Mitchell",
+        content: "The product listing cards need more whitespace between them. Also, can we add a 'Quick View' button that shows product details in a popup instead of navigating to a new page?",
+        images: [],
+        createdAt: "2025-02-26T14:30:00Z",
+        status: "approved",
+        replies: [
+            {
+                id: "reply-1",
+                authorId: "emp-1",
+                authorType: "employee",
+                authorName: "Alex Rivera",
+                content: "Good call on the whitespace! I'll add 24px gap between cards. The Quick View modal is a great idea — I'll create a task for it.",
+                createdAt: "2025-02-26T15:10:00Z",
+            },
+        ],
+    },
+    {
+        id: "comment-2",
+        taskId: "task-2",
+        projectId: "proj-1",
+        authorId: "client-1",
+        authorType: "client",
+        authorName: "James Mitchell",
+        content: "For the checkout flow, can we also support Apple Pay and Google Pay? Our competitors all have these options and customers have been asking.",
+        images: [],
+        createdAt: "2025-02-27T09:15:00Z",
+        status: "pending",
+        replies: [],
+    },
+    {
+        id: "comment-3",
+        taskId: "task-3",
+        projectId: "proj-1",
+        authorId: "client-1",
+        authorType: "client",
+        authorName: "James Mitchell",
+        content: "The search results are too slow when filtering by multiple categories. Can we optimize the queries? Here's a screenshot of the issue:",
+        images: ["https://placehold.co/800x400/1e293b/94a3b8?text=Slow+Search+Results+Screenshot"],
+        createdAt: "2025-02-27T11:45:00Z",
+        status: "rejected",
+        rejectionReason: "This is already being addressed in the upcoming performance optimization sprint. No duplicate task needed.",
+        replies: [
+            {
+                id: "reply-2",
+                authorId: "emp-1",
+                authorType: "employee",
+                authorName: "Alex Rivera",
+                content: "We're aware of this issue. The performance fix is scheduled for next sprint — it involves switching to ElasticSearch for the product catalog.",
+                createdAt: "2025-02-27T12:00:00Z",
+            },
+        ],
+    },
+];
