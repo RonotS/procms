@@ -43,7 +43,7 @@ const statusColors: Record<string, string> = {
 export default function ProjectDetailPage() {
     const { id } = useParams();
     const projectData = initialProjects.find((p) => p.id === id);
-    const client = clients.find((c) => c.id === projectData?.clientId);
+    const projectClients = projectData?.clientIds.map((cid) => clients.find((c) => c.id === cid)).filter(Boolean) || [];
 
     const [columns, setColumns] = useState<KanbanColumn[]>(
         projectData?.columns || defaultColumns
@@ -207,16 +207,20 @@ export default function ProjectDetailPage() {
                         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                             {projectData.description}
                         </p>
-                        {client && (
-                            <Link
-                                href={`/clients/${client.id}`}
-                                className="mt-2 inline-flex items-center gap-1.5 text-sm text-brand-500 hover:text-brand-600 transition-colors"
-                            >
-                                <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        {projectClients.length > 0 && (
+                            <div className="mt-2 flex items-center gap-2 flex-wrap">
+                                <svg className="h-4 w-4 shrink-0 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                 </svg>
-                                {client.company}
-                            </Link>
+                                {projectClients.map((c, i) => (
+                                    <span key={c!.id} className="inline-flex items-center">
+                                        <Link href={`/clients/${c!.id}`} className="text-sm text-brand-500 hover:text-brand-600 transition-colors">
+                                            {c!.company}
+                                        </Link>
+                                        {i < projectClients.length - 1 && <span className="ml-2 mr-1 text-gray-300 dark:text-gray-600">,</span>}
+                                    </span>
+                                ))}
+                            </div>
                         )}
                     </div>
                     <div className="flex items-center gap-3 flex-wrap shrink-0">
@@ -265,7 +269,7 @@ export default function ProjectDetailPage() {
                     <div className="min-w-0">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Budget</p>
                         <p className="mt-1 text-lg font-bold text-gray-900 dark:text-white/90 truncate">
-                            ${projectData.budget.toLocaleString()}
+                            {projectData.budget ? `$${projectData.budget.toLocaleString()}` : "—"}
                         </p>
                     </div>
                     <div className="min-w-0">

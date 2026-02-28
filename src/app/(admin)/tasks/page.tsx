@@ -8,7 +8,7 @@ const allTasks = projects.flatMap((p) =>
     p.tasks.map((t) => ({
         ...t,
         projectName: p.name,
-        clientId: p.clientId,
+        clientIds: p.clientIds,
     }))
 );
 
@@ -71,8 +71,8 @@ export default function TasksPage() {
                     <button
                         onClick={() => setViewMode("table")}
                         className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === "table"
-                                ? "bg-brand-500 text-white"
-                                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            ? "bg-brand-500 text-white"
+                            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                             }`}
                     >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -82,8 +82,8 @@ export default function TasksPage() {
                     <button
                         onClick={() => setViewMode("cards")}
                         className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === "cards"
-                                ? "bg-brand-500 text-white"
-                                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                            ? "bg-brand-500 text-white"
+                            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                             }`}
                     >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

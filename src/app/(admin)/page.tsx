@@ -157,7 +157,7 @@ export default function Dashboard() {
               .filter((p) => p.status === "active")
               .slice(0, 4)
               .map((project) => {
-                const client = clients.find((c) => c.id === project.clientId);
+                const client = clients.find((c) => c.id === project.clientIds[0]);
                 return (
                   <Link
                     key={project.id}
@@ -169,7 +169,7 @@ export default function Dashboard() {
                         {project.name}
                       </h3>
                       <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                        {client?.company} • Due{" "}
+                        {project.clientIds.length > 1 ? `${client?.company} +${project.clientIds.length - 1}` : client?.company} • Due{" "}
                         {new Date(project.dueDate).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",

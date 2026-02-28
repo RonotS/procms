@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { projects, clients, employees } from "@/data/mockData";
-import { ArrowRightIcon } from "@/icons/index";
+import { projects as initialProjects, clients, employees, Project } from "@/data/mockData";
+import { ArrowRightIcon, PlusIcon } from "@/icons/index";
+import { AddProjectModal } from "@/components/AddProjectModal";
 
 const statusColors: Record<string, string> = {
     active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
@@ -13,10 +14,12 @@ const statusColors: Record<string, string> = {
 };
 
 export default function ProjectsPage() {
+    const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
+    const [showAddProject, setShowAddProject] = useState(false);
 
-    const filteredProjects = projects.filter((project) => {
+    const filteredProjects = projectsList.filter((project) => {
         const matchesSearch =
             project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             project.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -28,13 +31,22 @@ export default function ProjectsPage() {
     return (
         <div className="space-y-6">
             {/* Page Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white/90">
-                    Projects
-                </h1>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Track progress across all client projects
-                </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white/90">
+                        Projects
+                    </h1>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Track progress across all client projects
+                    </p>
+                </div>
+                <button
+                    onClick={() => setShowAddProject(true)}
+                    className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-600 transition-colors"
+                >
+                    <PlusIcon className="h-5 w-5" />
+                    Add Project
+                </button>
             </div>
 
             {/* Filters */}
@@ -67,8 +79,8 @@ export default function ProjectsPage() {
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
                                 className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${filterStatus === status
-                                        ? "bg-brand-500 text-white"
-                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                    ? "bg-brand-500 text-white"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                                     }`}
                             >
                                 {status === "on-hold"
@@ -83,7 +95,7 @@ export default function ProjectsPage() {
             {/* Projects Grid */}
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
                 {filteredProjects.map((project) => {
-                    const client = clients.find((c) => c.id === project.clientId);
+                    const projectClients = project.clientIds.map((cid) => clients.find((c) => c.id === cid)).filter(Boolean);
                     const projectEmployees = [
                         ...new Set(project.tasks.map((t) => t.assigneeId)),
                     ]
@@ -102,12 +114,12 @@ export default function ProjectsPage() {
                             {/* Color banner */}
                             <div
                                 className={`h-1.5 rounded-t-2xl ${project.status === "active"
-                                        ? "bg-gradient-to-r from-emerald-400 to-emerald-600"
-                                        : project.status === "on-hold"
-                                            ? "bg-gradient-to-r from-amber-400 to-amber-600"
-                                            : project.status === "completed"
-                                                ? "bg-gradient-to-r from-blue-400 to-blue-600"
-                                                : "bg-gradient-to-r from-red-400 to-red-600"
+                                    ? "bg-gradient-to-r from-emerald-400 to-emerald-600"
+                                    : project.status === "on-hold"
+                                        ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                                        : project.status === "completed"
+                                            ? "bg-gradient-to-r from-blue-400 to-blue-600"
+                                            : "bg-gradient-to-r from-red-400 to-red-600"
                                     }`}
                             />
 
@@ -125,7 +137,7 @@ export default function ProjectsPage() {
                                                 •
                                             </span>
                                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                {client?.company}
+                                                {projectClients.map((c) => c!.company).join(", ")}
                                             </span>
                                         </div>
                                         <h3 className="mt-3 text-base font-semibold text-gray-900 dark:text-white/90 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
@@ -196,6 +208,12 @@ export default function ProjectsPage() {
                     );
                 })}
             </div>
+
+            <AddProjectModal
+                isOpen={showAddProject}
+                onClose={() => setShowAddProject(false)}
+                onAdd={(project) => setProjectsList([project, ...projectsList])}
+            />
         </div>
     );
 }

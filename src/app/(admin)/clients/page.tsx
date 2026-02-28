@@ -102,8 +102,8 @@ export default function ClientsPage() {
                             key={status}
                             onClick={() => setFilterStatus(status)}
                             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${filterStatus === status
-                                    ? "bg-brand-500 text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                ? "bg-brand-500 text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                                 }`}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -116,7 +116,7 @@ export default function ClientsPage() {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {filteredClients.map((client) => {
                     const clientProjects = projects.filter(
-                        (p) => p.clientId === client.id
+                        (p) => p.clientIds.includes(client.id)
                     );
                     const activeProjects = clientProjects.filter(
                         (p) => p.status === "active"
@@ -147,8 +147,8 @@ export default function ClientsPage() {
                                 </div>
                                 <span
                                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${client.status === "active"
-                                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
-                                            : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+                                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
                                         }`}
                                 >
                                     {client.status}

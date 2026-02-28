@@ -26,14 +26,43 @@ export interface Project {
     id: string;
     name: string;
     description: string;
-    clientId: string;
+    clientIds: string[];
     status: "active" | "completed" | "on-hold" | "cancelled";
     progress: number;
     startDate: string;
     dueDate: string;
-    budget: number;
+    budget?: number;
     columns: KanbanColumn[];
     tasks: Task[];
+}
+
+export interface Subscription {
+    id: string;
+    clientId: string;
+    name: string;
+    billingType: "monthly" | "hourly" | "one-time" | "milestone";
+    status: "active" | "paused" | "completed" | "cancelled";
+    // For monthly
+    monthlyRate?: number;
+    // For hourly
+    hourlyRate?: number;
+    estimatedHours?: number;
+    // For one-time
+    fixedAmount?: number;
+    // For milestone
+    milestones?: {
+        label: string;
+        percentage: number;
+        amount: number;
+        status: "pending" | "invoiced" | "paid";
+    }[];
+    totalValue: number;
+    amountPaid: number;
+    startDate: string;
+    endDate?: string;
+    nextBillingDate?: string;
+    notes: string;
+    projectId?: string;
 }
 
 export interface Client {
@@ -69,6 +98,132 @@ export const defaultColumns: KanbanColumn[] = [
     { id: "in-progress", title: "In Progress", color: "#F59E0B", order: 2 },
     { id: "review", title: "Review", color: "#8B5CF6", order: 3 },
     { id: "done", title: "Done", color: "#10B981", order: 4 },
+];
+
+export const subscriptions: Subscription[] = [
+    {
+        id: "sub-1",
+        clientId: "client-1",
+        name: "Website Maintenance Retainer",
+        billingType: "monthly",
+        status: "active",
+        monthlyRate: 3500,
+        totalValue: 42000,
+        amountPaid: 24500,
+        startDate: "2024-08-01",
+        endDate: "2025-08-01",
+        nextBillingDate: "2025-03-01",
+        notes: "Includes up to 20 hours of maintenance, bug fixes, and minor updates per month.",
+    },
+    {
+        id: "sub-2",
+        clientId: "client-1",
+        name: "E-Commerce Platform Build",
+        billingType: "milestone",
+        status: "active",
+        milestones: [
+            { label: "Project Kickoff (50% Upfront)", percentage: 50, amount: 37500, status: "paid" },
+            { label: "Completion & Launch (50% Final)", percentage: 50, amount: 37500, status: "pending" },
+        ],
+        totalValue: 75000,
+        amountPaid: 37500,
+        startDate: "2025-01-10",
+        endDate: "2025-04-30",
+        notes: "50% upfront, 50% upon project completion and client sign-off.",
+        projectId: "proj-1",
+    },
+    {
+        id: "sub-3",
+        clientId: "client-2",
+        name: "Brand Design Consulting",
+        billingType: "hourly",
+        status: "active",
+        hourlyRate: 150,
+        estimatedHours: 300,
+        totalValue: 45000,
+        amountPaid: 18000,
+        startDate: "2025-02-01",
+        endDate: "2025-05-15",
+        notes: "Billed bi-weekly based on tracked hours. Includes design reviews and creative direction.",
+        projectId: "proj-2",
+    },
+    {
+        id: "sub-4",
+        clientId: "client-3",
+        name: "Trading Dashboard Development",
+        billingType: "milestone",
+        status: "active",
+        milestones: [
+            { label: "Phase 1 - Data Pipeline (30%)", percentage: 30, amount: 36000, status: "paid" },
+            { label: "Phase 2 - Dashboard UI (40%)", percentage: 40, amount: 48000, status: "invoiced" },
+            { label: "Phase 3 - QA & Launch (30%)", percentage: 30, amount: 36000, status: "pending" },
+        ],
+        totalValue: 120000,
+        amountPaid: 36000,
+        startDate: "2024-10-15",
+        endDate: "2025-03-31",
+        notes: "Three-phase milestone billing. Phase 2 invoice sent, awaiting payment.",
+        projectId: "proj-3",
+    },
+    {
+        id: "sub-5",
+        clientId: "client-3",
+        name: "Server & Infrastructure Support",
+        billingType: "monthly",
+        status: "active",
+        monthlyRate: 2800,
+        totalValue: 33600,
+        amountPaid: 14000,
+        startDate: "2024-10-01",
+        endDate: "2025-10-01",
+        nextBillingDate: "2025-03-01",
+        notes: "Managed cloud infrastructure, monitoring, and DevOps support.",
+    },
+    {
+        id: "sub-6",
+        clientId: "client-4",
+        name: "Health Portal Audit",
+        billingType: "one-time",
+        status: "completed",
+        fixedAmount: 45000,
+        totalValue: 45000,
+        amountPaid: 45000,
+        startDate: "2024-03-05",
+        endDate: "2024-06-30",
+        notes: "One-time security and UX audit of the patient portal. Fully paid.",
+    },
+    {
+        id: "sub-7",
+        clientId: "client-5",
+        name: "Property Portal Development",
+        billingType: "milestone",
+        status: "active",
+        milestones: [
+            { label: "Deposit (25% Upfront)", percentage: 25, amount: 22000, status: "paid" },
+            { label: "Phase 1 - Search Engine (25%)", percentage: 25, amount: 22000, status: "pending" },
+            { label: "Phase 2 - Agent Dashboard (25%)", percentage: 25, amount: 22000, status: "pending" },
+            { label: "Final Delivery (25%)", percentage: 25, amount: 22000, status: "pending" },
+        ],
+        totalValue: 88000,
+        amountPaid: 22000,
+        startDate: "2025-01-15",
+        endDate: "2025-07-31",
+        notes: "Four equal milestone payments. First deposit paid on kickoff.",
+        projectId: "proj-5",
+    },
+    {
+        id: "sub-8",
+        clientId: "client-5",
+        name: "SEO & Analytics Consulting",
+        billingType: "hourly",
+        status: "active",
+        hourlyRate: 120,
+        estimatedHours: 80,
+        totalValue: 9600,
+        amountPaid: 3600,
+        startDate: "2025-02-01",
+        notes: "Ad hoc consulting hours for SEO optimization and analytics setup. Billed monthly.",
+    },
 ];
 
 export const employees: Employee[] = [
@@ -218,7 +373,7 @@ export const projects: Project[] = [
         id: "proj-1",
         name: "E-Commerce Platform Redesign",
         description: "Complete redesign of the e-commerce platform with modern UI/UX, improved checkout flow, and mobile-first approach.",
-        clientId: "client-1",
+        clientIds: ["client-1"],
         status: "active",
         progress: 65,
         startDate: "2025-01-10",
@@ -304,7 +459,7 @@ export const projects: Project[] = [
         id: "proj-2",
         name: "Brand Identity System",
         description: "Develop comprehensive brand guidelines, logo variations, and design system components.",
-        clientId: "client-2",
+        clientIds: ["client-2"],
         status: "active",
         progress: 40,
         startDate: "2025-02-01",
@@ -354,7 +509,7 @@ export const projects: Project[] = [
         id: "proj-3",
         name: "Trading Dashboard",
         description: "Real-time trading dashboard with live data feeds, portfolio management, and analytics.",
-        clientId: "client-3",
+        clientIds: ["client-3", "client-1"],
         status: "active",
         progress: 80,
         startDate: "2024-10-15",
@@ -404,7 +559,7 @@ export const projects: Project[] = [
         id: "proj-4",
         name: "Mobile App MVP",
         description: "Build a minimum viable product for the client's mobile application using React Native.",
-        clientId: "client-1",
+        clientIds: ["client-1"],
         status: "on-hold",
         progress: 20,
         startDate: "2025-01-20",
@@ -442,7 +597,7 @@ export const projects: Project[] = [
         id: "proj-5",
         name: "Property Listing Portal",
         description: "Full-stack property listing portal with search, virtual tours, and agent management.",
-        clientId: "client-5",
+        clientIds: ["client-5"],
         status: "active",
         progress: 35,
         startDate: "2025-01-15",
